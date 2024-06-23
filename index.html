@@ -10,10 +10,10 @@
         #urlOutput {
             margin-top: 20px;
         }
-  .table-responsive {
-    max-height: 400px;
-    overflow-x: auto;
-  }
+        .table-responsive {
+            max-height: 400px;
+            overflow-x: auto;
+        }
     </style>
 </head>
 <body>
@@ -53,94 +53,95 @@
     <button class="btn" onclick="generateURL()">Generate URL</button>
     <p id="urlOutput" class="mt-4"></p>
 
-<div class="container mt-5">
-  <h2>Vehicle Records</h2>
-  <div class="table-responsive">
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Kenteken</th>
-          <th>Merk</th>
-          <th>Handelsbenaming</th>
-          <th>Datum Tenaamstelling</th>
-          <th>Bruto BPM</th>
-          <th>Eerste Kleur</th>
-          <th>Max Trekgewicht Geremd</th>
-          <th>Catalogusprijs</th>
-          <th>Max Snelheid</th>
-          <th>Type</th>
-          <th>Typegoedkeuringsnummer</th>
-          <th>Variant</th>
-          <th>Uitvoering</th>
-          <th>Vermogen Massarijklaar</th>
-          <th>Registratiedatum Goedkeuring</th>
-        </tr>
-      </thead>
-      <tbody id="vehicle-table-body">
-        <!-- Data will be inserted here -->
-      </tbody>
-    </table>
+    <div class="container mt-5">
+      <h2>Results</h2>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Kenteken</th>
+              <th>Merk</th>
+              <th>Handelsbenaming</th>
+              <th>Datum Tenaamstelling</th>
+              <th>Bruto BPM</th>
+              <th>Eerste Kleur</th>
+              <th>Max Trekgewicht Geremd</th>
+              <th>Catalogusprijs</th>
+              <th>Max Snelheid</th>
+              <th>Type</th>
+              <th>Typegoedkeuringsnummer</th>
+              <th>Variant</th>
+              <th>Uitvoering</th>
+              <th>Vermogen Massarijklaar</th>
+              <th>Registratiedatum Goedkeuring</th>
+            </tr>
+          </thead>
+          <tbody id="vehicle-table-body">
+            <!-- Data will be inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
+        const baseUrl = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json'
+        
+        const daysAgo = 14
+        const d = new Date()
+        d.setDate(d.getDate() - daysAgo);
+        const startDate = d.toISOString().slice(0,10).replace(/-/g,"")
+        console.log('Finding car registrations since ' + startDate)
+        
         function generateURL() {
             var param1 = document.getElementById('param1').value;
             var param2 = document.getElementById('param2').value;
             var param3 = document.getElementById('param3').value;
-            var url = "http://example.com?BPM=" + encodeURIComponent(param1) + "&Cataloguswaarde=" + encodeURIComponent(param2) + "&Kleur=" + encodeURIComponent(param3);
+            var url = "http://example.com?BPM=" + encodeURIComponent(param1) + "&Cataloguswaarde=" + encodeURIComponent(param2) + "&Kleur=" + encodeURIComponent(param3)
+            document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url + '</a>'
+        }
+            
+        function loadRegistrations() {
+            const query = 'SELECT%0A%20%20%60kenteken%60%2C%0A%20%20%60merk%60%2C%0A%20%20%60handelsbenaming%60%2C%0A%20%20%60datum_tenaamstelling%60%2C%0A%20%20%60bruto_bpm%60%2C%0A%20%20%60eerste_kleur%60%2C%0A%20%20%60maximum_trekken_massa_geremd%60%2C%0A%20%20%60catalogusprijs%60%2C%0A%20%20%60maximale_constructiesnelheid%60%2C%0A%20%20%60type%60%2C%0A%20%20%60typegoedkeuringsnummer%60%2C%0A%20%20%60variant%60%2C%0A%20%20%60uitvoering%60%2C%0A%20%20%60vermogen_massarijklaar%60%2C%0A%20%20%60registratie_datum_goedkeuring_afschrijvingsmoment_bpm_dt%60%0AWHERE%0A%20%20caseless_eq(%60merk%60%2C%20%22KIA%22)%0A%20%20AND%20(caseless_eq(%60handelsbenaming%60%2C%20%22SPORTAGE%22)%0A%20%20%20%20%20%20%20%20%20AND%20((%60datum_tenaamstelling%60%20%3E%3D%20'+startDate+')%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20(caseless_eq(%60eerste_kleur%60%2C%20%22GROEN%22)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20((%60bruto_bpm%60%20%3D%206933)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20(%60catalogusprijs%60%20%3D%2046575)))))%0AORDER%20BY%20%60datum_tenaamstelling%60%20DESC%20NULL%20LAST'
+            
+            const url = baseUrl + '?$query=' + query
+            
             document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url + '</a>';
+            
+            fetch(url)
+              .then(processResponse)
+              .then(processCars)
+        }
+ 
+        function processResponse(response) {
+            if (response.status === 200) {
+              return response.json()
+            } else {
+                alert('Fout bij het opbalen van gegevens van RDW API. Status code: ' + response.status)
+                console.error('response body', response.text())
+            }
+        }
+         
+        function processCars(cars) {
+          var title = cars.length > 0 ? "Nieuwe kentekens" : "Geen nieuwe kentekens"
+          var body = 'In de afgelopen '+ daysAgo +' dagen zijn er ' + cars.length + ' nieuwe KIA\'s op kenteken gezet met deze configuratie.'
+          alert(body)
+        
+            displayResults(cars)
         }
 
-const baseUrl = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json'
-
-const daysAgo = 14
-const d = new Date()
-d.setDate(d.getDate() - daysAgo);
-const startDate = d.toISOString().slice(0,10).replace(/-/g,"")
-console.log('Finding car registrations since ' + startDate)
-
-function loadRegistrations() {
-const query = 'SELECT%0A%20%20%60kenteken%60%2C%0A%20%20%60merk%60%2C%0A%20%20%60handelsbenaming%60%2C%0A%20%20%60datum_tenaamstelling%60%2C%0A%20%20%60bruto_bpm%60%2C%0A%20%20%60eerste_kleur%60%2C%0A%20%20%60maximum_trekken_massa_geremd%60%2C%0A%20%20%60catalogusprijs%60%2C%0A%20%20%60maximale_constructiesnelheid%60%2C%0A%20%20%60type%60%2C%0A%20%20%60typegoedkeuringsnummer%60%2C%0A%20%20%60variant%60%2C%0A%20%20%60uitvoering%60%2C%0A%20%20%60vermogen_massarijklaar%60%2C%0A%20%20%60registratie_datum_goedkeuring_afschrijvingsmoment_bpm_dt%60%0AWHERE%0A%20%20caseless_eq(%60merk%60%2C%20%22KIA%22)%0A%20%20AND%20(caseless_eq(%60handelsbenaming%60%2C%20%22SPORTAGE%22)%0A%20%20%20%20%20%20%20%20%20AND%20((%60datum_tenaamstelling%60%20%3E%3D%20'+startDate+')%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20(caseless_eq(%60eerste_kleur%60%2C%20%22GROEN%22)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20((%60bruto_bpm%60%20%3D%206933)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20(%60catalogusprijs%60%20%3D%2046575)))))%0AORDER%20BY%20%60datum_tenaamstelling%60%20DESC%20NULL%20LAST'
-
-const url = baseUrl + '?$query=' + query
-
-document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url + '</a>';
-
-fetch(url)
-  .then(processResponse)
-  .then(processCars)
-
-//$(document).ready(function() {
-  $.getJSON(url, function(data) {
-    let tableContent = '';
-    data.forEach(function(record) {
-      tableContent += '<tr>';
-      for (let key in record) {
-        tableContent += '<td>' + record[key] + '</td>';
-      }
-      tableContent += '</tr>';
-    });
-    $('#vehicle-table-body').html(tableContent);
-  });
-//});
-
-}
- 
-function processResponse(response) {
-if (response.status === 200) {
-  return response.json()
-  } else {
-  alert('Fout bij het opbalen van gegevens van RDW API. Status code: ' + response.status)
-  console.error('response body', response.text())
-  }
-}
- 
-function processCars(cars) {
-  var title = cars.length > 0 ? "Nieuwe kentekens" : "Geen nieuwe kentekens"
-  var body = 'In de afgelopen '+ daysAgo +' dagen zijn er ' + cars.length + ' nieuwe KIA\'s op kenteken gezet met deze configuratie.'
-  alert(body)
-}
+    function displayResults(cars) {
+        let tableContent = '';
+        cars.forEach(function(car) {
+          tableContent += '<tr>';
+          for (let key in car) {
+            tableContent += '<td>' + car[key] + '</td>';
+          }
+          tableContent += '</tr>';
+        });
+        $('#vehicle-table-body').html(tableContent);
+    }
     </script>
 </body>
 </html>
