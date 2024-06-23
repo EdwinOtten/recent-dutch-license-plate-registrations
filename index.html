@@ -15,9 +15,15 @@
 <body>
     <h1 class="mb-4">KIA Sportage kentekenregistraties</h1>
     <div class="form-group">
-        <label for="param1">Merk:</label>
+        <label for="make">Merk:</label>
         <select class="form-control" id="make" name="make" disabled>
             <option value="KIA">KIA</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="model">Model:</label>
+        <select class="form-control" id="model" name="model" disabled>
+            <option value="SPORTAGE">SPORTAGE</option>
         </select>
     </div>
     <div class="form-group">
@@ -66,6 +72,8 @@ function loadRegistrations() {
 const query = 'SELECT%0A%20%20%60kenteken%60%2C%0A%20%20%60merk%60%2C%0A%20%20%60handelsbenaming%60%2C%0A%20%20%60datum_tenaamstelling%60%2C%0A%20%20%60bruto_bpm%60%2C%0A%20%20%60eerste_kleur%60%2C%0A%20%20%60maximum_trekken_massa_geremd%60%2C%0A%20%20%60catalogusprijs%60%2C%0A%20%20%60maximale_constructiesnelheid%60%2C%0A%20%20%60type%60%2C%0A%20%20%60typegoedkeuringsnummer%60%2C%0A%20%20%60variant%60%2C%0A%20%20%60uitvoering%60%2C%0A%20%20%60vermogen_massarijklaar%60%2C%0A%20%20%60registratie_datum_goedkeuring_afschrijvingsmoment_bpm_dt%60%0AWHERE%0A%20%20caseless_eq(%60merk%60%2C%20%22KIA%22)%0A%20%20AND%20(caseless_eq(%60handelsbenaming%60%2C%20%22SPORTAGE%22)%0A%20%20%20%20%20%20%20%20%20AND%20((%60datum_tenaamstelling%60%20%3E%3D%20'+startDate+')%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20(caseless_eq(%60eerste_kleur%60%2C%20%22GROEN%22)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20((%60bruto_bpm%60%20%3D%206933)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20(%60catalogusprijs%60%20%3D%2046575)))))%0AORDER%20BY%20%60datum_tenaamstelling%60%20DESC%20NULL%20LAST'
 
 const url = baseUrl + '?$query=' + query
+
+document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url + '</a>';
 
 fetch(url)
   .then(processResponse)
