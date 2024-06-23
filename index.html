@@ -10,6 +10,10 @@
         #urlOutput {
             margin-top: 20px;
         }
+  .table-responsive {
+    max-height: 400px;
+    overflow-x: auto;
+  }
     </style>
 </head>
 <body>
@@ -49,6 +53,34 @@
     <button class="btn" onclick="generateURL()">Generate URL</button>
     <p id="urlOutput" class="mt-4"></p>
 
+<div class="container mt-5">
+  <h2>Vehicle Records</h2>
+  <div class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Kenteken</th>
+          <th>Merk</th>
+          <th>Handelsbenaming</th>
+          <th>Datum Tenaamstelling</th>
+          <th>Bruto BPM</th>
+          <th>Eerste Kleur</th>
+          <th>Max Trekgewicht Geremd</th>
+          <th>Catalogusprijs</th>
+          <th>Max Snelheid</th>
+          <th>Type</th>
+          <th>Typegoedkeuringsnummer</th>
+          <th>Variant</th>
+          <th>Uitvoering</th>
+          <th>Vermogen Massarijklaar</th>
+          <th>Registratiedatum Goedkeuring</th>
+        </tr>
+      </thead>
+      <tbody id="vehicle-table-body">
+        <!-- Data will be inserted here -->
+      </tbody>
+    </table>
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
@@ -78,6 +110,21 @@ document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url 
 fetch(url)
   .then(processResponse)
   .then(processCars)
+
+//$(document).ready(function() {
+  $.getJSON(url, function(data) {
+    let tableContent = '';
+    data.forEach(function(record) {
+      tableContent += '<tr>';
+      for (let key in record) {
+        tableContent += '<td>' + record[key] + '</td>';
+      }
+      tableContent += '</tr>';
+    });
+    $('#vehicle-table-body').html(tableContent);
+  });
+//});
+
 }
  
 function processResponse(response) {
