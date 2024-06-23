@@ -4,58 +4,55 @@
     <title>KIA Sportage kentekenregistraties</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
-        body {
-            padding: 20px;
-        }
         #urlOutput {
             margin-top: 20px;
         }
         .table-responsive {
-            max-height: 400px;
             overflow-x: auto;
         }
     </style>
 </head>
 <body>
-    <h1 class="mb-4">KIA Sportage kentekenregistraties</h1>
-    <div class="form-group">
-        <label for="make">Merk:</label>
-        <select class="form-control" id="make" name="make" disabled>
-            <option value="KIA">KIA</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="model">Model:</label>
-        <select class="form-control" id="model" name="model" disabled>
-            <option value="SPORTAGE">SPORTAGE</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label for="param1">BPM:</label>
-        <input type="text" class="form-control" id="param1" name="param1">
-    </div>
-    <div class="form-group">
-        <label for="param2">Cataloguswaarde:</label>
-        <input type="text" class="form-control" id="param2" name="param2">
-    </div>
-    <div class="form-group">
-        <label for="param3">Kleur:</label>
-        <select class="form-control" id="param3" name="param3">
-            <option>GROEN</option>
-            <option>BLAUW</option>
-            <option>GRIJS</option>
-            <option>ZWART</option>
-            <option>WIT</option>
-            <option>GEEL</option>
-        </select>
-    </div>
-    <button class="btn btn-primary" onclick="loadRegistrations()">Zoek registraties</button>
-    <button class="btn" onclick="generateURL()">Generate URL</button>
-    <p id="urlOutput" class="mt-4"></p>
-
     <div class="container mt-5">
+        <h1 class="mb-4">KIA Sportage kentekenregistraties</h1>
+        <div class="form-group">
+            <label for="make">Merk:</label>
+            <select class="form-control" id="make" name="make" disabled>
+                <option value="KIA">KIA</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="model">Model:</label>
+            <select class="form-control" id="model" name="model" disabled>
+                <option value="SPORTAGE">SPORTAGE</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="bpm">BPM:</label>
+            <input type="text" class="form-control" id="bpm" name="bpm">
+        </div>
+        <div class="form-group">
+            <label for="catalogusprijs">catalogusprijs:</label>
+            <input type="text" class="form-control" id="catalogusprijs" name="catalogusprijs">
+        </div>
+        <div class="form-group">
+            <label for="color">Kleur:</label>
+            <select class="form-control" id="color" name="color">
+                <option>GROEN</option>
+                <option>BLAUW</option>
+                <option>GRIJS</option>
+                <option>ZWART</option>
+                <option>WIT</option>
+                <option>GEEL</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" onclick="loadRegistrations()">Zoek registraties</button>
+        <button class="btn" onclick="showUrl()">Generate URL</button>
+        <code id="urlOutput" class="mt-4"></code>
+
       <h2>Results</h2>
-      <div class="table-responsive">
+    </div>
+    <div class="table-responsive">
         <table class="table table-bordered">
           <thead>
             <tr>
@@ -80,7 +77,6 @@
             <!-- Data will be inserted here -->
           </tbody>
         </table>
-      </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
@@ -94,21 +90,51 @@
         const startDate = d.toISOString().slice(0,10).replace(/-/g,"")
         console.log('Finding car registrations since ' + startDate)
         
-        function generateURL() {
-            var param1 = document.getElementById('param1').value;
-            var param2 = document.getElementById('param2').value;
-            var param3 = document.getElementById('param3').value;
-            var url = "http://example.com?BPM=" + encodeURIComponent(param1) + "&Cataloguswaarde=" + encodeURIComponent(param2) + "&Kleur=" + encodeURIComponent(param3)
+        function generateUrl() {
+            var make = document.getElementById('make').value;
+            var model = document.getElementById('model').value;
+            var bpm = document.getElementById('bpm').value;
+            var catalogusprijs = document.getElementById('catalogusprijs').value;
+            var color = document.getElementById('color').value;
+
+            var query = `SELECT
+  kenteken,
+  merk,
+  handelsbenaming,
+  datum_tenaamstelling,
+  bruto_bpm,
+  eerste_kleur,
+  maximum_trekken_massa_geremd,
+  catalogusprijs,
+  maximale_constructiesnelheid,
+  type,
+  typegoedkeuringsnummer,
+  variant,
+  uitvoering,
+  vermogen_massarijklaar,
+  registratie_datum_goedkeuring_afschrijvingsmoment_bpm_dt
+WHERE
+  caseless_eq(merk, "`+ make +`")
+  AND (caseless_eq(handelsbenaming, "`+ model +`")
+         AND ((datum_tenaamstelling >= '+startDate+')
+                AND (caseless_eq(eerste_kleur, "`+ color +`")
+                       AND ((bruto_bpm = `+ bpm +`)
+                              AND (catalogusprijs = `+ catalogusprijs +`)))))
+ORDER BY datum_tenaamstelling DESC NULL LAST`
+            
+            return baseUrl + '?$query=' + encodeURIComponent(query)
+        }
+        
+        function showUrl() {
+            const url = generateUrl()
             document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url + '</a>'
         }
             
         function loadRegistrations() {
-            const query = 'SELECT%0A%20%20%60kenteken%60%2C%0A%20%20%60merk%60%2C%0A%20%20%60handelsbenaming%60%2C%0A%20%20%60datum_tenaamstelling%60%2C%0A%20%20%60bruto_bpm%60%2C%0A%20%20%60eerste_kleur%60%2C%0A%20%20%60maximum_trekken_massa_geremd%60%2C%0A%20%20%60catalogusprijs%60%2C%0A%20%20%60maximale_constructiesnelheid%60%2C%0A%20%20%60type%60%2C%0A%20%20%60typegoedkeuringsnummer%60%2C%0A%20%20%60variant%60%2C%0A%20%20%60uitvoering%60%2C%0A%20%20%60vermogen_massarijklaar%60%2C%0A%20%20%60registratie_datum_goedkeuring_afschrijvingsmoment_bpm_dt%60%0AWHERE%0A%20%20caseless_eq(%60merk%60%2C%20%22KIA%22)%0A%20%20AND%20(caseless_eq(%60handelsbenaming%60%2C%20%22SPORTAGE%22)%0A%20%20%20%20%20%20%20%20%20AND%20((%60datum_tenaamstelling%60%20%3E%3D%20'+startDate+')%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20(caseless_eq(%60eerste_kleur%60%2C%20%22GROEN%22)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20((%60bruto_bpm%60%20%3D%206933)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20(%60catalogusprijs%60%20%3D%2046575)))))%0AORDER%20BY%20%60datum_tenaamstelling%60%20DESC%20NULL%20LAST'
+            // const query = 'SELECT%0A%20%20%60kenteken%60%2C%0A%20%20%60merk%60%2C%0A%20%20%60handelsbenaming%60%2C%0A%20%20%60datum_tenaamstelling%60%2C%0A%20%20%60bruto_bpm%60%2C%0A%20%20%60eerste_kleur%60%2C%0A%20%20%60maximum_trekken_massa_geremd%60%2C%0A%20%20%60catalogusprijs%60%2C%0A%20%20%60maximale_constructiesnelheid%60%2C%0A%20%20%60type%60%2C%0A%20%20%60typegoedkeuringsnummer%60%2C%0A%20%20%60variant%60%2C%0A%20%20%60uitvoering%60%2C%0A%20%20%60vermogen_massarijklaar%60%2C%0A%20%20%60registratie_datum_goedkeuring_afschrijvingsmoment_bpm_dt%60%0AWHERE%0A%20%20caseless_eq(%60merk%60%2C%20%22KIA%22)%0A%20%20AND%20(caseless_eq(%60handelsbenaming%60%2C%20%22SPORTAGE%22)%0A%20%20%20%20%20%20%20%20%20AND%20((%60datum_tenaamstelling%60%20%3E%3D%20'+startDate+')%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20(caseless_eq(%60eerste_kleur%60%2C%20%22GROEN%22)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20((%60bruto_bpm%60%20%3D%206933)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20AND%20(%60catalogusprijs%60%20%3D%2046575)))))%0AORDER%20BY%20%60datum_tenaamstelling%60%20DESC%20NULL%20LAST'
+            // const url = baseUrl + '?$query=' + query
             
-            const url = baseUrl + '?$query=' + query
-            
-            document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url + '</a>';
-            
+            const url = generateUrl()            
             fetch(url)
               .then(processResponse)
               .then(processCars)
