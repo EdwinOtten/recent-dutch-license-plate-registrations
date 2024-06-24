@@ -101,15 +101,15 @@
       const baseUrl = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json'
 
       function generateUrl() {
-        var make = document.getElementById('make').value;
-        var model = document.getElementById('model').value;
-        var bpm = document.getElementById('bpm').value;
-        var catalogusprijs = document.getElementById('catalogusprijs').value;
-        var color = document.getElementById('color').value;
-        var daysAgo = document.getElementById('daysAgo').value;
+        var make = document.getElementById('make').value
+        var model = document.getElementById('model').value
+        var bpm = document.getElementById('bpm').value
+        var catalogusprijs = document.getElementById('catalogusprijs').value
+        var color = document.getElementById('color').value
+        var daysAgo = document.getElementById('daysAgo').value
 
       const d = new Date()
-      d.setDate(d.getDate() - daysAgo);
+      d.setDate(d.getDate() - daysAgo)
       const startDate = d.toISOString().slice(0, 10).replace(/-/g, "")
       console.log('Finding car registrations since ' + startDate)
 
@@ -171,8 +171,10 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
           }
           tableContent += '</tr>';
         });
-        $('#vehicle-table-body').html(tableContent);
-        $('#result-text').html('In de afgelopen ' + daysAgo + ' dagen zijn er ' + cars.length + ' nieuwe KIA\'s op kenteken gezet met deze configuratie.');
+        $('#vehicle-table-body').html(tableContent)
+
+        var daysAgo = document.getElementById('daysAgo').value
+        $('#result-text').html('In de afgelopen ' + daysAgo + ' dagen zijn er ' + cars.length + ' nieuwe KIA\'s op kenteken gezet met deze configuratie.')
       }
 
     </script>
