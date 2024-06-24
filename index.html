@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-
   <head>
-    <title>Kentekenregistraties</title>
+    <title>Recente kentekenregistraties</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
       #urlOutput {
@@ -18,7 +18,7 @@
 
   <body>
     <div class="container mt-5">
-      <h1 class="mb-4">KIA Sportage kentekenregistraties</h1>
+      <h1 class="mb-3">Recente kentekenregistraties</h1>
       <div class="form-group">
         <label for="make">Merk:</label>
         <select class="form-control" id="make" name="make" disabled>
@@ -33,11 +33,11 @@
       </div>
       <div class="form-group">
         <label for="bpm">BPM:</label>
-        <input type="number" class="form-control" id="bpm" name="bpm" value="6933" />
+        <input type="number" class="form-control" id="bpm" name="bpm" value="6933" placeholder="BPM in hele euro's" />
       </div>
       <div class="form-group">
-        <label for="catalogusprijs">catalogusprijs:</label>
-        <input type="number" class="form-control" id="catalogusprijs" name="catalogusprijs" value="46575" />
+        <label for="catalogusprijs">Catalogusprijs:</label>
+        <input type="number" class="form-control" id="catalogusprijs" name="catalogusprijs" value="46575" placeholder="Catalogusprijs in hele euro's" />
       </div>
       <div class="form-group">
         <label for="color">Kleur:</label>
@@ -48,6 +48,16 @@
           <option>ZWART</option>
           <option>WIT</option>
           <option>GEEL</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="daysAgo">Zoeken in:</label>
+        <select class="form-control" id="daysAgo" name="daysAgo">
+          <option value="3">afgelopen 3 dagen</option>
+          <option value="7">afgelopen 7 dagen</option>
+          <option value="14" selected>afgelopen 14 dagen</option>
+          <option value="30">afgelopen 30 dagen</option>
+          <option value="90">afgelopen 90 dagen</option>
         </select>
       </div>
       <button class="btn btn-primary" onclick="loadRegistrations()">Zoek registraties</button>
@@ -90,18 +100,18 @@
     <script>
       const baseUrl = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json'
 
-      const daysAgo = 14
-      const d = new Date()
-      d.setDate(d.getDate() - daysAgo);
-      const startDate = d.toISOString().slice(0, 10).replace(/-/g, "")
-      console.log('Finding car registrations since ' + startDate)
-
       function generateUrl() {
         var make = document.getElementById('make').value;
         var model = document.getElementById('model').value;
         var bpm = document.getElementById('bpm').value;
         var catalogusprijs = document.getElementById('catalogusprijs').value;
         var color = document.getElementById('color').value;
+        var daysAgo = document.getElementById('daysAgo').value;
+
+      const d = new Date()
+      d.setDate(d.getDate() - daysAgo);
+      const startDate = d.toISOString().slice(0, 10).replace(/-/g, "")
+      console.log('Finding car registrations since ' + startDate)
 
         var query = `SELECT
   kenteken,
