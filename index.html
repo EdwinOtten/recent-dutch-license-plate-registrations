@@ -21,8 +21,7 @@
       <h1 class="mb-3">Recente kentekenregistraties</h1>
       <div class="form-group">
         <label for="make">Merk:</label>
-        <select class="form-control" id="make" name="make" disabled>
-          <option value="KIA">KIA</option>
+        <select class="form-control" id="make" name="make">
         </select>
       </div>
       <div class="form-group">
@@ -149,11 +148,46 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
       function loadRegistrations() {
         const url = generateUrl()
         fetch(url)
-          .then(processResponse)
+          .then(processJsonResponse)
           .then(displayResults)
       }
 
-      function processResponse(response) {
+function populateCarMakes() {
+    const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%20%60merk%60%2C%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%0AWHERE%20%60kenteken_counter%60%20%3E%20500%0AGROUP%20BY%20%60merk%60%0AORDER%20BY%20%60sum_kenteken_counter%60%20DESC%20NULL%20LAST%2C%20%60merk%60%20ASC%20NULL%20LAST'
+    fetch(url)
+        .then(processJsonResponse)
+        .then(setCarMakes)
+}
+
+function populateCarModels(make) {
+    const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%0A%20%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%2C%0A%20%20%60handelsbenaming%60%0AWHERE%20caseless_eq(%60merk%60%2C%20%22'+make+'%22)%0AGROUP%20BY%20%60handelsbenaming%60%0AHAVING%20%60sum_kenteken_counter%60%20%3E%2050%0AORDER%20BY%20%60handelsbenaming%60%20ASC%20NULL%20LAST'
+    fetch(url)
+        .then(processJsonResponse)
+        .then(setCarModels)
+}
+
+function setCarMakes(results) {
+    results.forEach((result) => {
+        console.log(result.merk)
+        console.log(result.sum_kenteken_counter)
+    })
+$('#make').empty()
+$.each(results, function (i, item) {
+    $('#make').append($('<option>', { 
+        value: item.merk,
+        text : item.merk + ' (' + item.sum_kenteken_counter + ')'
+    }));
+});
+}
+
+function setCarModels(results) {
+    results.forEach((result) => {
+        console.log(result.handelsbenaming)
+        console.log(result.sum_kenteken_counter)
+    })
+}
+
+      function processJsonResponse(response) {
         if (response.status === 200) {
           return response.json()
         } else {
@@ -176,6 +210,8 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
         var daysAgo = document.getElementById('daysAgo').value
         $('#result-text').html('In de afgelopen ' + daysAgo + ' dagen zijn er ' + cars.length + ' nieuwe KIA\'s op kenteken gezet met deze configuratie.')
       }
+
+      populateCarMakes()
 
     </script>
   </body>
