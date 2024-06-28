@@ -26,8 +26,7 @@
       </div>
       <div class="form-group">
         <label for="model">Model:</label>
-        <select class="form-control" id="model" name="model" disabled>
-          <option value="SPORTAGE">SPORTAGE</option>
+        <select class="form-control" id="model" name="model">
         </select>
       </div>
       <div class="form-group">
@@ -97,22 +96,23 @@
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
-      const baseUrl = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json'
 
-      function generateUrl() {
-        var make = document.getElementById('make').value
-        var model = document.getElementById('model').value
-        var bpm = document.getElementById('bpm').value
-        var catalogusprijs = document.getElementById('catalogusprijs').value
-        var color = document.getElementById('color').value
-        var daysAgo = document.getElementById('daysAgo').value
+ const baseUrl = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json'
 
-      const d = new Date()
-      d.setDate(d.getDate() - daysAgo)
-      const startDate = d.toISOString().slice(0, 10).replace(/-/g, "")
-      console.log('Finding car registrations since ' + startDate)
+ function generateUrl() {
+     var make = document.getElementById('make').value
+     var model = document.getElementById('model').value
+     var bpm = document.getElementById('bpm').value
+     var catalogusprijs = document.getElementById('catalogusprijs').value
+     var color = document.getElementById('color').value
+     var daysAgo = document.getElementById('daysAgo').value
 
-        var query = `SELECT
+     const d = new Date()
+     d.setDate(d.getDate() - daysAgo)
+     const startDate = d.toISOString().slice(0, 10).replace(/-/g, "")
+     console.log('Finding car registrations since ' + startDate)
+
+     var query = `SELECT
   kenteken,
   merk,
   handelsbenaming,
@@ -137,81 +137,88 @@ WHERE
                               AND (catalogusprijs = ` + catalogusprijs + `)))))
 ORDER BY datum_tenaamstelling DESC NULL LAST`
 
-        return baseUrl + '?$query=' + encodeURIComponent(query)
-      }
+     return baseUrl + '?$query=' + encodeURIComponent(query)
+ }
 
-      function showUrl() {
-        const url = generateUrl()
-        document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url + '</a>'
-      }
+ function showUrl() {
+     const url = generateUrl()
+     document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url + '</a>'
+ }
 
-      function loadRegistrations() {
-        const url = generateUrl()
-        fetch(url)
-          .then(processJsonResponse)
-          .then(displayResults)
-      }
+ function loadRegistrations() {
+     const url = generateUrl()
+     fetch(url)
+         .then(processJsonResponse)
+         .then(displayResults)
+ }
 
-function populateCarMakes() {
-    const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%20%60merk%60%2C%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%0AWHERE%20%60kenteken_counter%60%20%3E%20500%0AGROUP%20BY%20%60merk%60%0AORDER%20BY%20%60sum_kenteken_counter%60%20DESC%20NULL%20LAST%2C%20%60merk%60%20ASC%20NULL%20LAST'
-    fetch(url)
-        .then(processJsonResponse)
-        .then(setCarMakes)
-}
+ function populateCarMakes() {
+     const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%20%60merk%60%2C%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%0AWHERE%20%60kenteken_counter%60%20%3E%20500%0AGROUP%20BY%20%60merk%60%0AORDER%20BY%20%60merk%60%20ASC%20NULL%20LAST%2C%20%60merk%60%20ASC%20NULL%20LAST'
+     fetch(url)
+         .then(processJsonResponse)
+         .then(setCarMakes)
+ }
 
-function populateCarModels(make) {
-    const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%0A%20%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%2C%0A%20%20%60handelsbenaming%60%0AWHERE%20caseless_eq(%60merk%60%2C%20%22'+make+'%22)%0AGROUP%20BY%20%60handelsbenaming%60%0AHAVING%20%60sum_kenteken_counter%60%20%3E%2050%0AORDER%20BY%20%60handelsbenaming%60%20ASC%20NULL%20LAST'
-    fetch(url)
-        .then(processJsonResponse)
-        .then(setCarModels)
-}
+ function populateCarModels(make) {
+     const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%0A%20%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%2C%0A%20%20%60handelsbenaming%60%0AWHERE%20caseless_eq(%60merk%60%2C%20%22' + make + '%22)%0AGROUP%20BY%20%60handelsbenaming%60%0AHAVING%20%60sum_kenteken_counter%60%20%3E%2050%0AORDER%20BY%20%60handelsbenaming%60%20ASC%20NULL%20LAST'
+     fetch(url)
+         .then(processJsonResponse)
+         .then(setCarModels)
+ }
 
-function setCarMakes(results) {
-    results.forEach((result) => {
-        console.log(result.merk)
-        console.log(result.sum_kenteken_counter)
-    })
-$('#make').empty()
-$.each(results, function (i, item) {
-    $('#make').append($('<option>', { 
-        value: item.merk,
-        text : item.merk + ' (' + item.sum_kenteken_counter + ')'
-    }));
-});
-}
+ function setCarMakes(results) {
+     $('#make').empty()
+     $('#make').val([])
+     $.each(results, function (i, item) {
+         $('#make').append($('<option>', {
+             value: item.merk,
+             text: item.merk + ' (' + item.sum_kenteken_counter + ')'
+         }))
+     })
+ }
 
-function setCarModels(results) {
-    results.forEach((result) => {
-        console.log(result.handelsbenaming)
-        console.log(result.sum_kenteken_counter)
-    })
-}
+ function setCarModels(results) {
+     $('#model').empty()
+     $('#model').val([])
+     $.each(results, function (i, item) {
+         $('#model').append($('<option>', {
+             value: item.handelsbenaming,
+             text: item.handelsbenaming + ' (' + item.sum_kenteken_counter + ')'
+         }))
+     })
+ }
 
-      function processJsonResponse(response) {
-        if (response.status === 200) {
-          return response.json()
-        } else {
-          alert('Fout bij het opbalen van gegevens van RDW API. Status code: ' + response.status)
-          console.error('response body', response.text())
-        }
-      }
+ function processJsonResponse(response) {
+     if (response.status === 200) {
+         return response.json()
+     } else {
+         alert('Fout bij het opbalen van gegevens van RDW API. Status code: ' + response.status)
+         console.error('response body', response.text())
+     }
+ }
 
-      function displayResults(cars) {
-        let tableContent = '';
-        cars.forEach(function(car) {
-          tableContent += '<tr>';
-          for (let key in car) {
-            tableContent += '<td>' + car[key] + '</td>';
-          }
-          tableContent += '</tr>';
-        });
-        $('#vehicle-table-body').html(tableContent)
+ function displayResults(cars) {
+     let tableContent = ''
+     cars.forEach(function (car) {
+         tableContent += '<tr>'
+         for (let key in car) {
+             tableContent += '<td>' + car[key] + '</td>'
+         }
+         tableContent += '</tr>'
+     })
+     $('#vehicle-table-body').html(tableContent)
 
-        var daysAgo = document.getElementById('daysAgo').value
-        $('#result-text').html('In de afgelopen ' + daysAgo + ' dagen zijn er ' + cars.length + ' nieuwe KIA\'s op kenteken gezet met deze configuratie.')
-      }
+     var daysAgo = document.getElementById('daysAgo').value
+     $('#result-text').html('In de afgelopen ' + daysAgo + ' dagen zijn er ' + cars.length + ' nieuwe KIA\'s op kenteken gezet met deze configuratie.')
+ }
 
-      populateCarMakes()
+ $('#make').change(function () {
+     var optionSelected = $(this).find("option:selected")
+     var make = optionSelected.val()
+     populateCarModels(make)
+ });
+
+ populateCarMakes()
 
     </script>
   </body>
