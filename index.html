@@ -59,12 +59,10 @@
         </select>
       </div>
       <button class="btn btn-primary" onclick="loadRegistrations()">Zoek registraties</button>
-      <button class="btn" onclick="showUrl()">RDW data explorer</button>
-      <code id="urlOutput" class="mt-4"></code>
-
       <h2 class="mt-5">Resultaten</h2>
       <blockquote id="result-text">
       </blockquote>
+      <div id="result-buttons"></div>
     </div>
     <div class="table-responsive">
       <table class="table table-bordered">
@@ -140,14 +138,16 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
      return encodeURIComponent(query)
  }
 
- function showUrl() {
-     const query = generateQuery()
+ function showRDWButton(query) {
      const url = 'https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Gekentekende_voertuigen/m9d7-ebf2/explore/query/'+query+'/page/filter'
-     document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url + '</a>'
+     document.getElementById('result-buttons').innerHTML = '<a href="' + url + '" class"btn btn-link">RDW data explorer</a>'
+
+
  }
 
  function loadRegistrations() {
      const query = generateQuery()
+     showRDWButton(query)
      const url = baseUrl + '?$query=' + query
      fetch(url)
          .then(processJsonResponse)
