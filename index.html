@@ -210,8 +210,9 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
      })
      $('#vehicle-table-body').html(tableContent)
 
-     var daysAgo = document.getElementById('daysAgo').value
-     $('#result-text').html('In de afgelopen ' + daysAgo + ' dagen zijn er ' + cars.length + ' nieuwe KIA\'s op kenteken gezet met deze configuratie.')
+     const make = cars[0].merk
+     const daysAgo = document.getElementById('daysAgo').value
+     $('#result-text').html('In de afgelopen ' + daysAgo + ' dagen zijn er ' + cars.length + ' nieuwe ' + make + '\'s op kenteken gezet met deze configuratie.')
  }
 
  $('#make').change(function () {
