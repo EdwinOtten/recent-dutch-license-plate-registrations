@@ -59,7 +59,7 @@
         </select>
       </div>
       <button class="btn btn-primary" onclick="loadRegistrations()">Zoek registraties</button>
-      <button class="btn" onclick="showUrl()">Generate URL</button>
+      <button class="btn" onclick="showUrl()">RDW data explorer</button>
       <code id="urlOutput" class="mt-4"></code>
 
       <h2 class="mt-5">Resultaten</h2>
@@ -99,7 +99,7 @@
 
  const baseUrl = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json'
 
- function generateUrl() {
+ function generateQuery() {
      var make = document.getElementById('make').value
      var model = document.getElementById('model').value
      var bpm = document.getElementById('bpm').value
@@ -137,16 +137,18 @@ WHERE
                               AND (catalogusprijs = ` + catalogusprijs + `)))))
 ORDER BY datum_tenaamstelling DESC NULL LAST`
 
-     return baseUrl + '?$query=' + encodeURIComponent(query)
+     return encodeURIComponent(query)
  }
 
  function showUrl() {
-     const url = generateUrl()
+     const query = generateQuery()
+     const url = 'https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Gekentekende_voertuigen/m9d7-ebf2/explore/query/'+query+'/page/filter'
      document.getElementById('urlOutput').innerHTML = '<a href="' + url + '">' + url + '</a>'
  }
 
  function loadRegistrations() {
-     const url = generateUrl()
+     const query = generateQuery()
+     const url = baseUrl + '?$query=' + query
      fetch(url)
          .then(processJsonResponse)
          .then(displayResults)
@@ -172,7 +174,7 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
      $.each(results, function (i, item) {
          $('#make').append($('<option>', {
              value: item.merk,
-             text: item.merk + ' (' + item.sum_kenteken_counter + ')'
+             text: item.merk + ' (' + item.sum_kenteken_counter + ' totaal)'
          }))
      })
  }
@@ -183,7 +185,7 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
      $.each(results, function (i, item) {
          $('#model').append($('<option>', {
              value: item.handelsbenaming,
-             text: item.handelsbenaming + ' (' + item.sum_kenteken_counter + ')'
+             text: item.handelsbenaming + ' (' + item.sum_kenteken_counter + ' totaal)'
          }))
      })
  }
