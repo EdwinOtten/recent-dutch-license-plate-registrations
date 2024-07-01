@@ -19,15 +19,21 @@
   <body>
     <div class="container mt-5">
       <h1 class="mb-3">Recente kentekenregistraties</h1>
-      <div class="form-group">
-        <label for="make">Merk:</label>
-        <select class="form-control" id="make" name="make">
-        </select>
+      <div class="d-flex align-items-center">
+        <div class="form-group">
+          <label for="make">Merk:</label>
+          <select class="form-control" id="make" name="make">
+          </select>
+        </div>
+        <div id="make-spinner" class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
       </div>
-      <div class="form-group">
-        <label for="model">Model:</label>
-        <select class="form-control" id="model" name="model">
-        </select>
+      <div class="d-flex align-items-center">
+        <div class="form-group">
+          <label for="model">Model:</label>
+          <select class="form-control" id="model" name="model">
+          </select>
+        </div>
+        <div id="model-spinner" class="spinner-border ml-auto" role="status" aria-hidden="true" hidden></div>
       </div>
       <div class="form-group">
         <label for="bpm">BPM:</label>
@@ -62,7 +68,7 @@
       <h2 class="mt-5">Resultaten</h2>
       <blockquote id="result-text">
       </blockquote>
-      <div id="result-buttons"></div>
+      <div id="result-buttons mb-5"></div>
     </div>
     <div class="table-responsive">
       <table class="table table-bordered">
@@ -140,7 +146,7 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
 
  function showRDWButton(query) {
      const url = 'https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Gekentekende_voertuigen/m9d7-ebf2/explore/query/'+query+'/page/filter'
-     document.getElementById('result-buttons').innerHTML = '<a href="' + url + '" class="btn btn-outline-primary mb-3">Bekijken in RDW data explorer</a>'
+     document.getElementById('result-buttons').innerHTML = '<a href="' + url + '" class="btn btn-outline-primary">Bekijken in RDW data explorer</a>'
 
 
  }
@@ -162,6 +168,8 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
  }
 
  function populateCarModels(make) {
+     document.getElementById('model-spinner').hidden = false
+
      const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%0A%20%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%2C%0A%20%20%60handelsbenaming%60%0AWHERE%20caseless_eq(%60merk%60%2C%20%22' + make + '%22)%0AGROUP%20BY%20%60handelsbenaming%60%0AHAVING%20%60sum_kenteken_counter%60%20%3E%2050%0AORDER%20BY%20%60handelsbenaming%60%20ASC%20NULL%20LAST'
      fetch(url)
          .then(processJsonResponse)
@@ -177,6 +185,7 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
              text: item.merk + ' (' + item.sum_kenteken_counter + ' totaal)'
          }))
      })
+     document.getElementById('make-spinner').hidden = true
  }
 
  function setCarModels(results) {
@@ -188,6 +197,8 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
              text: item.handelsbenaming + ' (' + item.sum_kenteken_counter + ' totaal)'
          }))
      })
+
+     document.getElementById('model-spinner').hidden = true
  }
 
  function processJsonResponse(response) {
