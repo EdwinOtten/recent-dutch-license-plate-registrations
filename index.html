@@ -161,7 +161,7 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
  }
 
  function populateCarMakes() {
-     const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%20%60merk%60%2C%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%0AWHERE%20%60kenteken_counter%60%20%3E%20500%0AGROUP%20BY%20%60merk%60%0AORDER%20BY%20%60merk%60%20ASC%20NULL%20LAST%2C%20%60merk%60%20ASC%20NULL%20LAST'
+     const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%20%60merk%60%20%0AWHERE%20%60sum(%60kenteken_counter%60)%60%20%3E%20500%0AGROUP%20BY%20%60merk%60%0AORDER%20BY%20%60merk%60%20ASC%20NULL%20LAST'
      fetch(url)
          .then(processJsonResponse)
          .then(setCarMakes)
@@ -170,7 +170,7 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
  function populateCarModels(make) {
      document.getElementById('model-spinner').hidden = false
 
-     const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%0A%20%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%2C%0A%20%20%60handelsbenaming%60%0AWHERE%20caseless_eq(%60merk%60%2C%20%22' + make + '%22)%0AGROUP%20BY%20%60handelsbenaming%60%0AHAVING%20%60sum_kenteken_counter%60%20%3E%2050%0AORDER%20BY%20%60handelsbenaming%60%20ASC%20NULL%20LAST'
+     const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%20%60handelsbenaming%60%0AWHERE%20caseless_eq(%60merk%60%2C%20%22' + make + '%22)%0AGROUP%20BY%20%60handelsbenaming%60%0AHAVING%20sum(%60kenteken_counter%60)%20%3E%2050%0AORDER%20BY%20%60handelsbenaming%60%20ASC%20NULL%20LAST'
      fetch(url)
          .then(processJsonResponse)
          .then(setCarModels)
@@ -182,10 +182,10 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
      $.each(results, function (i, item) {
          $('#make').append($('<option>', {
              value: item.merk,
-             text: item.merk + ' (' + item.sum_kenteken_counter + ' totaal)'
+             text: item.merk
          }))
      })
-     document.getElementById('make-spinner').hidden = true
+     //document.getElementById('make-spinner').hidden = true
  }
 
  function setCarModels(results) {
@@ -194,7 +194,7 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
      $.each(results, function (i, item) {
          $('#model').append($('<option>', {
              value: item.handelsbenaming,
-             text: item.handelsbenaming + ' (' + item.sum_kenteken_counter + ' totaal)'
+             text: item.handelsbenaming
          }))
      })
 
