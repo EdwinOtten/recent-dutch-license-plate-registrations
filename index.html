@@ -161,7 +161,7 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
  }
 
  function populateCarMakes() {
-     const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%20%60merk%60%20%0AWHERE%20%60sum(%60kenteken_counter%60)%60%20%3E%20500%0AGROUP%20BY%20%60merk%60%0AORDER%20BY%20%60merk%60%20ASC%20NULL%20LAST'
+     const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%20%60merk%60%20%0AWHERE%20sum(%60kenteken_counter%60)%20%3E%20500%0AGROUP%20BY%20%60merk%60%0AORDER%20BY%20%60merk%60%20ASC%20NULL%20LAST'
      fetch(url)
          .then(processJsonResponse)
          .then(setCarMakes)
