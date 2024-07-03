@@ -1,61 +1,56 @@
 <!DOCTYPE html>
 <html>
+
   <head>
     <title>Recente kentekenregistraties</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <style>
-      #urlOutput {
-        margin-top: 20px;
-      }
-
-      .table-responsive {
-        overflow-x: auto;
-      }
-
-    </style>
   </head>
 
   <body>
-    <div class="container mt-5">
-      <h1 class="mb-3">Recente kentekenregistraties</h1>
-      <div class="d-flex align-items-center">
-        <div class="form-group">
-          <label for="make">Merk:</label>
-          <select class="form-control" id="make" name="make">
-          </select>
-        </div>
-        <div id="make-spinner" class="spinner-border ml-auto" role="status" aria-hidden="true"></div>
-      </div>
-      <div class="d-flex align-items-center">
-        <div class="form-group">
-          <label for="model">Model:</label>
-          <select class="form-control" id="model" name="model">
-          </select>
-        </div>
-        <div id="model-spinner" class="spinner-border ml-auto" role="status" aria-hidden="true" hidden></div>
+    <div class="container mt-4 mb-5">
+      <h1 class="mb-4">Recente kentekenregistraties</h1>
+      <div class="form-group">
+        <label for="make" class="w-100">Merk *</label>
+        <select class="form-control" id="make" name="make" disabled>
+        </select>
+        <div id="make-spinner" class="spinner-border mr-auto" role="status" hidden></div>
       </div>
       <div class="form-group">
-        <label for="bpm">BPM:</label>
-        <input type="number" class="form-control" id="bpm" name="bpm" value="6933" placeholder="BPM in hele euro's" />
+        <label for="model" class="w-100">Model *</label>
+        <select class="form-control" id="model" name="model" disabled>
+        </select>
+        <div id="model-spinner" class="spinner-border ml-auto" role="status" hidden></div>
       </div>
       <div class="form-group">
-        <label for="catalogusprijs">Catalogusprijs:</label>
-        <input type="number" class="form-control" id="catalogusprijs" name="catalogusprijs" value="46575" placeholder="Catalogusprijs in hele euro's" />
+        <label for="bpm" class="w-100">BPM *</label>
+        <input type="number" class="form-control" id="bpm" name="bpm" placeholder="BPM in hele euro's" />
       </div>
       <div class="form-group">
-        <label for="color">Kleur:</label>
+        <label for="catalogusprijs" class="w-100">Catalogusprijs *</label>
+        <input type="number" class="form-control" id="catalogusprijs" name="catalogusprijs" placeholder="Catalogusprijs in hele euro's" />
+      </div>
+      <div class="form-group">
+        <label for="color" class="w-100">Kleur *</label>
         <select class="form-control" id="color" name="color">
-          <option>GROEN</option>
+          <option selected disabled>Selecteer een kleur</option>
+          <option>BEIGE</option>
           <option>BLAUW</option>
-          <option>GRIJS</option>
-          <option>ZWART</option>
-          <option>WIT</option>
+          <option>BRUIN</option>
+          <option>CREME</option>
           <option>GEEL</option>
+          <option>GRIJS</option>
+          <option>GROEN</option>
+          <option>ORANJE</option>
+          <option>PAARS</option>
+          <option>ROOD</option>
+          <option>ROSE</option>
+          <option>WIT</option>
+          <option>ZWART</option>
         </select>
       </div>
       <div class="form-group">
-        <label for="daysAgo">Zoeken in:</label>
+        <label for="daysAgo" class="w-100">Zoeken in *</label>
         <select class="form-control" id="daysAgo" name="daysAgo">
           <option value="3">afgelopen 3 dagen</option>
           <option value="7">afgelopen 7 dagen</option>
@@ -64,59 +59,96 @@
           <option value="90">afgelopen 90 dagen</option>
         </select>
       </div>
-      <button class="btn btn-primary" onclick="loadRegistrations()">Zoek registraties</button>
-      <h2 class="mt-5">Resultaten</h2>
-      <blockquote id="result-text">
-      </blockquote>
-      <div id="result-buttons mb-5"></div>
+      <button class="btn btn-primary mt-2" onclick="loadRegistrations()">Zoek registraties</button>
+      <button class="btn btn-light mt-2" onclick="populateAuthorPreferences()">Zoek voorkeur auteur</button>
     </div>
-    <div class="table-responsive">
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Kenteken</th>
-            <th>Merk</th>
-            <th>Handelsbenaming</th>
-            <th>Datum Tenaamstelling</th>
-            <th>Bruto BPM</th>
-            <th>Eerste Kleur</th>
-            <th>Max Trekgewicht Geremd</th>
-            <th>Catalogusprijs</th>
-            <th>Max Snelheid</th>
-            <th>Type</th>
-            <th>Typegoedkeuringsnummer</th>
-            <th>Variant</th>
-            <th>Uitvoering</th>
-            <th>Vermogen Massarijklaar</th>
-            <th>Registratiedatum Goedkeuring</th>
-          </tr>
-        </thead>
-        <tbody id="vehicle-table-body">
-          <!-- Data will be inserted here -->
-        </tbody>
-      </table>
-    </div>
+    <section id="section-results" hidden>
+      <div class="container">
+        <h2>Resultaten</h2>
+        <blockquote id="result-text">
+        </blockquote>
+        <div id="result-buttons" class="mb-5"></div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead class="thead-light">
+            <tr>
+              <th>Kenteken</th>
+              <th>Merk</th>
+              <th>Handelsbenaming</th>
+              <th>Datum Tenaamstelling</th>
+              <th>Bruto BPM</th>
+              <th>Eerste Kleur</th>
+              <th>Max Trekgewicht Geremd</th>
+              <th>Catalogusprijs</th>
+              <th>Max Snelheid</th>
+              <th>Type</th>
+              <th>Typegoedkeuringsnummer</th>
+              <th>Variant</th>
+              <th>Uitvoering</th>
+              <th>Vermogen Massarijklaar</th>
+              <th>Registratiedatum Goedkeuring</th>
+            </tr>
+          </thead>
+          <tbody id="vehicle-table-body">
+            <!-- Data will be inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </section>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
+      populateCarMakes()
 
- const baseUrl = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json'
+      $('#make').change(function() {
+        var optionSelected = $(this).find("option:selected")
+        var make = optionSelected.val()
+        populateCarModels(make)
+      });
 
- function generateQuery() {
-     var make = document.getElementById('make').value
-     var model = document.getElementById('model').value
-     var bpm = document.getElementById('bpm').value
-     var catalogusprijs = document.getElementById('catalogusprijs').value
-     var color = document.getElementById('color').value
-     var daysAgo = document.getElementById('daysAgo').value
+      // Populates the form with the preference of the author
+      function populateAuthorPreferences() {
+        $('#model').append($('<option>', {
+          value: 'SPORTAGE',
+          text: 'SPORTAGE'
+        }))
+        document.getElementById('model').disabled = false
 
-     const d = new Date()
-     d.setDate(d.getDate() - daysAgo)
-     const startDate = d.toISOString().slice(0, 10).replace(/-/g, "")
-     console.log('Finding car registrations since ' + startDate)
+        document.getElementById('make').value = 'KIA'
+        document.getElementById('model').value = 'SPORTAGE'
+        document.getElementById('bpm').value = '6933'
+        document.getElementById('catalogusprijs').value = '46575'
+        document.getElementById('color').value = 'GROEN'
+        document.getElementById('daysAgo').value = '14'
 
-     var query = `SELECT
+        loadRegistrations()
+      }
+
+      function generateQuery() {
+        var make = document.getElementById('make').value
+        var model = document.getElementById('model').value
+        var bpm = document.getElementById('bpm').value
+        var catalogusprijs = document.getElementById('catalogusprijs').value
+        var color = document.getElementById('color').value
+        var daysAgo = document.getElementById('daysAgo').value
+
+        if (!make ||
+          !model ||
+          !bpm ||
+          !catalogusprijs ||
+          !color ||
+          !daysAgo) {
+          alert('Vul alle velden in om te zoeken')
+          throw new Error('Not all required form inputs have values')
+        }
+
+        const d = new Date()
+        d.setDate(d.getDate() - daysAgo)
+        const startDate = d.toISOString().slice(0, 10).replace(/-/g, "")
+
+        var query = `SELECT
   kenteken,
   merk,
   handelsbenaming,
@@ -141,97 +173,125 @@ WHERE
                               AND (catalogusprijs = ` + catalogusprijs + `)))))
 ORDER BY datum_tenaamstelling DESC NULL LAST`
 
-     return encodeURIComponent(query)
- }
+        return encodeURIComponent(query)
+      }
 
- function showRDWButton(query) {
-     const url = 'https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Gekentekende_voertuigen/m9d7-ebf2/explore/query/'+query+'/page/filter'
-     document.getElementById('result-buttons').innerHTML = '<a href="' + url + '" class="btn btn-outline-primary">Bekijken in RDW data explorer</a>'
- }
+      function showRDWButton(query) {
+        const url = 'https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Gekentekende_voertuigen/m9d7-ebf2/explore/query/' + query + '/page/filter'
+        document.getElementById('result-buttons').innerHTML = '<a href="' + url + '" class="btn btn-outline-primary">Bekijken in RDW data explorer</a>'
+      }
 
- function loadRegistrations() {
-     const query = generateQuery()
-     showRDWButton(query)
-     const url = baseUrl + '?$query=' + query
-     fetch(url)
-         .then(processJsonResponse)
-         .then(displayResults)
- }
+      function loadRegistrations() {
+        const query = generateQuery()
+        showRDWButton(query)
+        const url = 'https://opendata.rdw.nl/resource/m9d7-ebf2.json?$query=' + query
+        fetch(url)
+          .then(processJsonResponse)
+          .then(displayResults)
+      }
 
- function populateCarMakes() {
-     const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%20%60merk%60%2C%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%0AWHERE%20%60kenteken_counter%60%20%3E%20500%0AGROUP%20BY%20%60merk%60%0AORDER%20BY%20%60merk%60%20ASC%20NULL%20LAST'
-     fetch(url)
-         .then(processJsonResponse)
-         .then(setCarMakes)
- }
+      function populateCarMakes() {
+        document.getElementById('make').hidden = true
+        document.getElementById('make-spinner').hidden = false
 
- function populateCarModels(make) {
-     document.getElementById('model-spinner').hidden = false
+        const query = `SELECT merk, kenteken_counter
+WHERE kenteken_counter > 400
+ORDER BY merk ASC NULL LAST`
+        const url = 'https://opendata.rdw.nl/resource/6bdv-w7jw.json?$query=' + encodeURIComponent(query)
+        fetch(url)
+          .then(processJsonResponse)
+          .then(setCarMakes)
+      }
 
-     const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=SELECT%0A%20%20sum(%60kenteken_counter%60)%20AS%20%60sum_kenteken_counter%60%20%0A%20%20%60handelsbenaming%60%0AWHERE%20caseless_eq(%60merk%60%2C%20%22' + make + '%22)%0AGROUP%20BY%20%60handelsbenaming%60%0AHAVING%20%60sum_kenteken_counter%60%20%3E%2050%0AORDER%20BY%20%60handelsbenaming%60%20ASC%20NULL%20LAST'
+      function populateCarModels(make) {
+        document.getElementById('model').hidden = true
+        document.getElementById('model-spinner').hidden = false
 
-     fetch(url)
-         .then(processJsonResponse)
-         .then(setCarModels)
- }
+        const query = `SELECT
+sum(kenteken_counter) AS sum_kenteken_counter,
+handelsbenaming
+WHERE caseless_eq(merk, "` + make + `")
+GROUP BY handelsbenaming
+HAVING sum_kenteken_counter > 50
+ORDER BY handelsbenaming ASC NULL LAST`
+        const url = 'https://opendata.rdw.nl/resource/fvzk-ga8v.json?$query=' + encodeURIComponent(query)
 
- function setCarMakes(results) {
-     $('#make').empty()
-     $('#make').val([])
-     $.each(results, function (i, item) {
-         $('#make').append($('<option>', {
-             value: item.merk,
-             text: item.merk
-         }))
-     })
-     //document.getElementById('make-spinner').hidden = true
- }
+        fetch(url)
+          .then(processJsonResponse)
+          .then(setCarModels)
+      }
 
- function setCarModels(results) {
-     $('#model').empty()
-     $('#model').val([])
-     $.each(results, function (i, item) {
-         $('#model').append($('<option>', {
-             value: item.handelsbenaming,
-             text: item.handelsbenaming
-         }))
-     })
+      function setCarMakes(results) {
+        $('#make').empty()
+        $('#make').append($('<option>', {
+          value: '',
+          text: 'Selecteer een merk',
+          disabled: true,
+          selected: true
+        }))
+        $.each(results, function(i, item) {
+          $('#make').append($('<option>', {
+            value: item.merk,
+            text: item.merk
+          }))
+        })
 
-     document.getElementById('model-spinner').hidden = true
- }
+        document.getElementById('make-spinner').hidden = true
+        document.getElementById('make').disabled = false
+        document.getElementById('make').hidden = false
+      }
 
- function processJsonResponse(response) {
-     if (response.status === 200) {
-         return response.json()
-     } else {
-         alert('Fout bij het opbalen van gegevens van RDW API. Status code: ' + response.status)
-         console.error('response body', response.text())
-     }
- }
+      function setCarModels(results) {
+        $('#model').empty()
+        $('#model').append($('<option>', {
+          value: '',
+          text: 'Selecteer een model',
+          disabled: true,
+          selected: true
+        }))
+        $.each(results, function(i, item) {
+          $('#model').append($('<option>', {
+            value: item.handelsbenaming,
+            text: item.handelsbenaming
+          }))
+        })
 
- function displayResults(cars) {
-     let tableContent = ''
-     cars.forEach(function (car) {
-         tableContent += '<tr>'
-         for (let key in car) {
-             tableContent += '<td>' + car[key] + '</td>'
-         }
-         tableContent += '</tr>'
-     })
-     $('#vehicle-table-body').html(tableContent)
+        document.getElementById('model-spinner').hidden = true
+        document.getElementById('model').disabled = false
+        document.getElementById('model').hidden = false
+      }
 
-     const make = cars[0].merk
-     const daysAgo = document.getElementById('daysAgo').value
-     $('#result-text').html('In de afgelopen ' + daysAgo + ' dagen zijn er ' + cars.length + ' nieuwe ' + make + '\'s op kenteken gezet met deze configuratie.')
- }
+      function processJsonResponse(response) {
+        if (response.status === 200) {
+          return response.json()
+        } else {
+          alert('Fout bij het opbalen van gegevens van RDW API. Status code: ' + response.status)
+          console.error('response body', response.text())
+          throw new Error(response.text())
+        }
+      }
 
- $('#make').change(function () {
-     var optionSelected = $(this).find("option:selected")
-     var make = optionSelected.val()
-     populateCarModels(make)
- });
+      function displayResults(cars) {
+        let tableContent = ''
+        cars.forEach(function(car) {
+          tableContent += '<tr>'
+          for (let key in car) {
+            var value = car[key]
+            if (key === 'datum_tenaamstelling') {
+              value = value.slice(6, 8) + '-' + value.slice(4, 6) + '-' + value.slice(0, 4)
+            }
+            tableContent += '<td>' + value + '</td>'
+          }
+          tableContent += '</tr>'
+        })
+        $('#vehicle-table-body').html(tableContent)
 
- populateCarMakes()
+        const make = cars[0].merk
+        const daysAgo = document.getElementById('daysAgo').value
+        $('#result-text').html('In de afgelopen ' + daysAgo + ' dagen zijn er ' + cars.length + ' nieuwe ' + make + '\'s op kenteken gezet met deze configuratie.')
+
+        document.getElementById('section-results').hidden = false
+      }
 
     </script>
   </body>
