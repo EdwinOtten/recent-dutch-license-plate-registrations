@@ -197,8 +197,8 @@ ORDER BY datum_tenaamstelling DESC NULL LAST`
       }
 
       function showRDWButton(query) {
-        const url = 'https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Gekentekende_voertuigen/m9d7-ebf2/explore/query/' + query + '/page/filter'
-        document.getElementById('result-buttons').innerHTML = '<a href="' + url + '" class="btn btn-outline-primary">Bekijken in RDW data explorer</a>'
+        const url = 'https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Gekentekende_voertuigen/m9d7-ebf2/explore/query/' + query + '/page/column_manager'
+        document.getElementById('result-buttons').innerHTML = '<a href="' + url + '" target="_blank" class="btn btn-outline-primary">Bekijken in RDW data explorer</a>'
       }
 
       function loadRegistrations() {
