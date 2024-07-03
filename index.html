@@ -10,54 +10,60 @@
   <body>
     <div class="container mt-4 mb-5">
       <h1 class="mb-4">Recente kentekenregistraties</h1>
-      <div class="form-group">
-        <label for="make" class="w-100">Merk *</label>
-        <select class="form-control" id="make" name="make" disabled>
-        </select>
-        <div id="make-spinner" class="spinner-border mr-auto" role="status" hidden></div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="make" class="w-100">Merk *</label>
+          <select class="form-control" id="make" name="make" disabled>
+          </select>
+          <div id="make-spinner" class="spinner-border mr-auto" role="status" hidden></div>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="model" class="w-100">Model *</label>
+          <select class="form-control" id="model" name="model" disabled>
+          </select>
+          <div id="model-spinner" class="spinner-border ml-auto" role="status" hidden></div>
+        </div>
       </div>
-      <div class="form-group">
-        <label for="model" class="w-100">Model *</label>
-        <select class="form-control" id="model" name="model" disabled>
-        </select>
-        <div id="model-spinner" class="spinner-border ml-auto" role="status" hidden></div>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="bpm" class="w-100">BPM *</label>
+          <input type="number" class="form-control" id="bpm" name="bpm" placeholder="BPM in hele euro's" />
+        </div>
+        <div class="form-group col-md-6">
+          <label for="catalogusprijs" class="w-100">Catalogusprijs *</label>
+          <input type="number" class="form-control" id="catalogusprijs" name="catalogusprijs" placeholder="Catalogusprijs in hele euro's" />
+        </div>
       </div>
-      <div class="form-group">
-        <label for="bpm" class="w-100">BPM *</label>
-        <input type="number" class="form-control" id="bpm" name="bpm" placeholder="BPM in hele euro's" />
-      </div>
-      <div class="form-group">
-        <label for="catalogusprijs" class="w-100">Catalogusprijs *</label>
-        <input type="number" class="form-control" id="catalogusprijs" name="catalogusprijs" placeholder="Catalogusprijs in hele euro's" />
-      </div>
-      <div class="form-group">
-        <label for="color" class="w-100">Kleur *</label>
-        <select class="form-control" id="color" name="color">
-          <option selected disabled>Selecteer een kleur</option>
-          <option>BEIGE</option>
-          <option>BLAUW</option>
-          <option>BRUIN</option>
-          <option>CREME</option>
-          <option>GEEL</option>
-          <option>GRIJS</option>
-          <option>GROEN</option>
-          <option>ORANJE</option>
-          <option>PAARS</option>
-          <option>ROOD</option>
-          <option>ROSE</option>
-          <option>WIT</option>
-          <option>ZWART</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="daysAgo" class="w-100">Zoeken in *</label>
-        <select class="form-control" id="daysAgo" name="daysAgo">
-          <option value="3">afgelopen 3 dagen</option>
-          <option value="7">afgelopen 7 dagen</option>
-          <option value="14" selected>afgelopen 14 dagen</option>
-          <option value="30">afgelopen 30 dagen</option>
-          <option value="90">afgelopen 90 dagen</option>
-        </select>
+      <div class="form-row">
+        <div class="form-group col-md-6">
+          <label for="color" class="w-100">Kleur *</label>
+          <select class="form-control" id="color" name="color">
+            <option selected disabled>Selecteer een kleur</option>
+            <option>BEIGE</option>
+            <option>BLAUW</option>
+            <option>BRUIN</option>
+            <option>CREME</option>
+            <option>GEEL</option>
+            <option>GRIJS</option>
+            <option>GROEN</option>
+            <option>ORANJE</option>
+            <option>PAARS</option>
+            <option>ROOD</option>
+            <option>ROSE</option>
+            <option>WIT</option>
+            <option>ZWART</option>
+          </select>
+        </div>
+        <div class="form-group col-md-6">
+          <label for="daysAgo" class="w-100">Zoeken in *</label>
+          <select class="form-control" id="daysAgo" name="daysAgo">
+            <option value="3">afgelopen 3 dagen</option>
+            <option value="7">afgelopen 7 dagen</option>
+            <option value="14" selected>afgelopen 14 dagen</option>
+            <option value="30">afgelopen 30 dagen</option>
+            <option value="90">afgelopen 90 dagen</option>
+          </select>
+        </div>
       </div>
       <button class="btn btn-primary mt-2" onclick="loadRegistrations()">Zoek registraties</button>
       <button class="btn btn-light mt-2" onclick="populateAuthorPreferences()">Zoek voorkeur auteur</button>
