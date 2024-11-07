@@ -1,6 +1,0 @@
-{
-  "name": "Recent Dutch License Plate Registrations",
-  "tasks": {
-    "launch": "npx http-server -o ./"
-  }
-}
